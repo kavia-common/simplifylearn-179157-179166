@@ -1,0 +1,4 @@
+{
+    "command": "pytest",
+    "working_directory": "/home/kavia/workspace/code-generation/simplifylearn-179157-179166/explainlike5_backend"
+}
