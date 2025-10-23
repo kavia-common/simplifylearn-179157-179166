@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.routes import get_api_router
 from src.core.config import get_settings
 from src.db import Base
 from src.db.session import engine, get_db
@@ -19,9 +20,14 @@ app = FastAPI(
 )
 
 # CORS configuration
-allow_origins = ["*"]
-if settings.CORS_ORIGINS and settings.CORS_ORIGINS != "*":
-    allow_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
+# Always include localhost:3000 plus any configured origins
+allow_origins = ["http://localhost:3000"]
+if settings.CORS_ORIGINS:
+    if settings.CORS_ORIGINS.strip() == "*":
+        allow_origins = ["*"]
+    else:
+        cfg = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
+        allow_origins = list(set(allow_origins + cfg))
 
 app.add_middleware(
     CORSMiddleware,
@@ -54,3 +60,6 @@ def health_check(db=Depends(get_db)):
     # Touch the DB session to ensure DB layer is healthy/initialized
     _ = db
     return {"message": "Healthy"}
+
+# Include sub-routers
+app.include_router(get_api_router())

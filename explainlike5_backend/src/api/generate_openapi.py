@@ -3,6 +3,8 @@ import os
 
 from src.api.main import app
 
+# Run this module to regenerate interfaces/openapi.json after adding or modifying routes.
+
 # Get the OpenAPI schema
 openapi_schema = app.openapi()
 
